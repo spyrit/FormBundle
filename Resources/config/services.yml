@@ -1,0 +1,5 @@
+services:
+    form.type.select2_hidden_propel:
+        class: Spyrit\FormBundle\Form\Select2HiddenPropelType
+        tags:
+            - { name: form.type, alias: select2_hidden_propel }

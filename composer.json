@@ -1,0 +1,31 @@
+{
+    "name": "spyrit/form-bundle",
+    "license": "MIT",
+    "type": "symfony-bundle",
+    "description": "Spyrit Form Symfony2 bundle",
+    "homepage": "https://github.com/spyrit/FormBundle",
+    "authors": [
+        {
+            "name": "Charles HENZEL",
+            "email": "charles.henzel@spyrit.net"
+        }
+    ],
+    "support": {
+        "email": "support@spyrit.net"
+    },
+    "autoload": {
+        "psr-0": { "Spyrit\\FormBundle": "" }
+    },
+    "target-dir": "Spyrit/FormBundle",
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/symfony": ">=2.8.0",
+        "spyrit/twig-extra-bundle": "dev-master"
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/spyrit/TwigExtraBundle.git"
+        }
+    ]
+}

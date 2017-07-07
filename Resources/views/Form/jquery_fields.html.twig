@@ -1,0 +1,124 @@
+{% block select2_widget %}
+{% spaceless %}
+    {{ block('choice_widget') }}
+
+{% if form.vars.name != '__name__' %}
+    {% embeddedasset package='ready' format='js' %}
+    $("#{{ id }}").select2($.extend(
+    {
+    },
+    {{ js_config|json_encode()|raw }}
+    ));
+    {% endembeddedasset %}
+{% endif %}
+{% endspaceless %}
+{% endblock select2_widget %}
+
+{% block select2_propel_widget %}
+{% spaceless %}
+    {{ block('select2_widget') }}
+{% endspaceless %}
+{% endblock select2_propel_widget %}
+
+{% block select2_hidden_widget %}
+{% spaceless %}
+    {% set type = type|default('hidden')%}
+    {{ block('form_widget_simple') }}
+{% if form.vars.name != '__name__' %}
+    {% embeddedasset package='ready' format='js' %}
+    $("#{{ id }}").select2($.extend(
+        {
+        {% set hasBefore = false %}
+        {% if formatResult is defined %}
+            {% set hasBefore = true %}
+            formatResult: {{ formatResult }}
+            
+        {% endif %}
+    
+        {% if formatSelection is defined %}
+            {% if hasBefore %}
+            ,
+            {% endif %}
+            {% set hasBefore = true %}
+            formatSelection: {{ formatSelection }}
+        {% endif %}
+    
+        {% if sourceType == 'route' %}
+            {% if hasBefore %}
+            ,
+            {% endif %}
+            {% set hasBefore = true %}
+            ajax: {
+                url: "{{ path(source) }}",
+                datatype: "jsonp",
+                quietMillis: 100,
+                data: function(term, page) {
+                    return {
+                        term: term,
+                        page: page,
+                        max_per_page: {{ maxPerPage ~ ( useTags ? ',
+                        tags: 1' : '' ) }}
+                    };
+                },
+                results: function(data, page) {
+                    var more = false;
+                    if (typeof(data.maxPerPage) != 'undefined' && typeof(data.total) != 'undefined') {
+                        more = (page * data.maxPerPage) < data.total;
+                    }
+                    return {
+                        results: data.results,
+                        more: more
+                    };
+                }
+            }
+        {% endif %}
+    
+        {% if initSource %}
+            {% if hasBefore %}
+            ,
+            {% endif %}
+            {% set hasBefore = true %}
+            initSelection: function(element, callback) {
+            {% if initSourceType == 'route' %}
+                $.getJSON(
+                    "{{ path(initSource) }}",
+                    {
+                        id: element.val(),
+                        multiple: {{ js_config['multiple'] ? 'true' : 'false' }}
+                    },
+                    function(json){
+                        callback(json.results);
+                    }
+                );
+            {% else %}
+                var init = {{ initSource|json_encode()|raw }};
+                {% if js_config['multiple'] %}
+                var elements = element.val().split(",");
+                var data = [];
+                for (var i in init) {
+                    for(var j in elements) {
+                        if (elements[j] == init[i].id) {
+                            data.push(init[i]);
+                        }
+                    }
+                }
+                callback(data);
+                {% else %}
+                callback(init);
+                {% endif %}
+            {% endif %}
+            }
+        {% endif %}
+        },
+        {{ js_config|json_encode()|raw }}
+    ));
+    {% endembeddedasset %}
+{% endif %}
+{% endspaceless %}
+{% endblock select2_hidden_widget %}
+
+{% block select2_hidden_propel_widget %}
+{% spaceless %}
+    {{ block('select2_hidden_widget') }}
+{% endspaceless %}
+{% endblock select2_hidden_propel_widget %}
